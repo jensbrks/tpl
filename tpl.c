@@ -1,50 +1,31 @@
+/* See LICENSE file for copyright and license details. */
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libgen.h>
+
+#include "util.h"
 
 #include "config.h"
-
-static void die(const char *fmt, ...);
-
-void
-die(const char *fmt, ...)
-{
-	va_list ap;
-
-	va_start(ap, fmt);
-	vfprintf(stderr, fmt, ap);
-	va_end(ap);
-
-	if (fmt[0] && fmt[strlen(fmt)-1] == ':')
-		fputc(' ', stderr);
-	else
-		fputc('\n', stderr);
-
-	exit(1);
-}
 
 int
 main(int argc, char *argv[])
 {
-	char *buf, *ptr, *start, *end;
-	if (!(buf = calloc(1, BUFSIZ)))
-		die("could not calloc() %u bytes\n", BUFSIZ);
+	char *ptr, *start, *end;
+	char *buf = ecalloc(1, BUFSIZ);
 
 	int i;
-	int open_delim_len = strlen(open_delim);
-	int close_delim_len = strlen(close_delim);
-
 	unsigned long len = 0;
 	unsigned long size = BUFSIZ;
+
+	int open_delim_len = strlen(open_delim);
+	int close_delim_len = strlen(close_delim);
 
 	while ((i = fread(buf + len, 1, BUFSIZ, stdin))) {
 		len += i;
 		if (BUFSIZ + len + 1 > size) {
 			size += BUFSIZ;
-			if (!(buf = realloc(buf, size)))
-				die("could not realloc() %lu bytes\n", size);
+			buf = erealloc(buf, size);
 		}
 	}
 
@@ -57,13 +38,9 @@ main(int argc, char *argv[])
 
 		if ((end = strstr(ptr, close_delim))) {
 			int evallen = end - ptr;
-
-			char *evalbuf;
-			if (!(evalbuf = calloc(1, evallen)))
-				die("could not calloc() %u bytes\n", evallen);
+			char *evalbuf = ecalloc(1, evallen);
 
 			memmove(evalbuf, ptr, evallen);
-
 			fflush(stdout);
 			system(evalbuf);
 

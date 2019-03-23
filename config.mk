@@ -5,7 +5,7 @@ VERSION = 0.2
 PREFIX = /usr/local
 
 # flags
-CFLAGS  = -std=c99 -pedantic -Wall -Os -DVERSION=\"${VERSION}\"
+CFLAGS  = -std=c99 -pedantic -Wall -Os
 LDFLAGS = -static
 
 # compiler and linker

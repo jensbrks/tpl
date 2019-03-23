@@ -3,7 +3,7 @@
 
 include config.mk
 
-SRC = tpl.c
+SRC = tpl.c util.c
 OBJ = ${SRC:.c=.o}
 
 all: options tpl
@@ -18,7 +18,7 @@ options:
 	@echo CC $<
 	@${CC} -c ${CFLAGS} $<
 
-${OBJ}: config.h config.mk
+${OBJ}: config.h config.mk util.h
 
 config.h:
 	@echo creating $@ from config.def.h
@@ -35,7 +35,7 @@ clean:
 dist: clean
 	@echo creating dist tarball
 	@mkdir -p tpl-${VERSION}
-	@cp -R LICENSE Makefile README.md config.def.h config.mk ${SRC} tpl-${VERSION}
+	@cp -R LICENSE Makefile README.md config.def.h config.mk ${SRC} util.h tpl-${VERSION}
 	@tar -cf tpl-${VERSION}.tar tpl-${VERSION}
 	@gzip tpl-${VERSION}.tar
 	@rm -rf tpl-${VERSION}
